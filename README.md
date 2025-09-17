@@ -1,14 +1,13 @@
 # Inkcut
 
- This is a fork of ***inkcut*** adding a perforation feature and some QOL improvements.
- This was written with AI assitance using Claude
+This is a fork of ***inkcut*** adding a <span style="color: #708fff;">perforation feature</span> and some QOL improvements.    
+ <span style="color: #727272;"> This was written with AI assistance using Claude </span>
 
-### Features
+## Features
+- <span style="color: #708fff;">perforation feature</span> for easy cut outs
+- QOL Working directory save logic
 
-- perforation feature for easy cut outs
-- QOL Working directory save logic 
+## Installation
 
-### Installation
-
-The seperate installation instructions for the two features are contained in **PERFORATION_INSTALLATION** and **WORKING_DIRECTORY_FEATURE**
+The seperate installation instructions for the two features are contained in <span style="color: #708fff;">**PERFORATION_INSTALLATION**</span> and <span style="color: #708fff;">**WORKING_DIRECTORY_FEATURE**</span>   
 They should be added to the original inkcut installation.
