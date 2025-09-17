@@ -125,3 +125,36 @@ enamldef RepeatConfigView(Container):
             value << to_unit(model.closed_loop_distance, job_plugin.units)
             value ::
                 model.closed_loop_distance = from_unit(change['value'], job_plugin.units)
+
+
+enamldef PerforationConfigView(Container):
+    attr model
+    padding = 0
+    Form:
+        Label:
+            text = QApplication.translate("filters", "Cut length")
+        DoubleSpinBox:
+            tool_tip = QApplication.translate("filters", "Length of each cut segment")
+            minimum = 0.1
+            decimals = 2
+            single_step = 0.5
+            suffix << " "+model.units
+            value << to_unit(model.cut_length, model.units)
+            value ::
+                model.cut_length = from_unit(change['value'], model.units)
+        Label:
+            text = QApplication.translate("filters", "Bridge length")
+        DoubleSpinBox:
+            tool_tip = QApplication.translate("filters", "Length of each uncut bridge (pen up)")
+            minimum = 0.1
+            decimals = 2
+            single_step = 0.5
+            suffix << " "+model.units
+            value << to_unit(model.bridge_length, model.units)
+            value ::
+                model.bridge_length = from_unit(change['value'], model.units)
+        Label:
+            text = QApplication.translate("filters", "Start with cut")
+        CheckBox:
+            tool_tip = QApplication.translate("filters", "Start perforation with a cut (checked) or bridge (unchecked)")
+            checked := model.start_with_cut

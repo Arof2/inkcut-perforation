@@ -414,10 +414,10 @@ class Device(Model):
             return TestTransport()
         declaration = self.transports[0]
         driver = self.declaration
-        protocol = self._create_default_protocol()
+        protocol = self._default_protocol()
         return declaration.factory(driver, declaration, protocol)
 
-    def _create_default_protocol(self):
+    def _default_protocol(self):
         """ Create the protocol for this device. """
         if not self.protocols:
             return DeviceProtocol()

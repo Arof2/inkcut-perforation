@@ -57,6 +57,15 @@ def repeat_config_view():
         from .view import RepeatConfigView
     return RepeatConfigView
 
+def perforation_factory():
+    from .perforation import PerforationFilter
+    return PerforationFilter()
+
+def perforation_config_view():
+    with enaml.imports():
+        from .view import PerforationConfigView
+    return PerforationConfigView
+
 
 enamldef FiltersManifest(PluginManifest):
     """ Add new filters here or within any other plugin.
@@ -94,3 +103,9 @@ enamldef FiltersManifest(PluginManifest):
             name = QApplication.translate("filters", "Blade Offset")
             factory = blade_offset_factory
             config_view = blade_offset_config_view
+
+        DeviceFilter:
+            id = 'perforation'
+            name = QApplication.translate("filters", "Perforation")
+            factory = perforation_factory
+            config_view = perforation_config_view
