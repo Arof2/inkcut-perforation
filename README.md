@@ -1,6 +1,6 @@
 # Inkcut
 
- This is a fork of [inkcut] adding a perforation feature and some QOL improvements.
+ This is a fork of ***inkcut*** adding a perforation feature and some QOL improvements.
  This was written with AI assitance using Claude
 
 ### Features
