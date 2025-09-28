@@ -133,36 +133,83 @@ class PerforationFilter(DeviceFilter):
             for i in range(1, len(poly)):
                 path.lineTo(poly[i])
                 
-            # If path is too short to perforate meaningfully, return as-is
+            # If path is too short to perforate meaningfully, handle specially
             total_length = path.length()
             segment_length = cut_length + bridge_length
-            
+
             if total_length <= segment_length:
-                return [poly]
+                # For very short paths, still need to ensure pen ends up
+                # Check if we should cut this short path or skip it entirely
+                if total_length <= cut_length:
+                    # Path is shorter than cut length
+                    if self.config.start_with_cut:
+                        # Cut the whole path, but add a minimal bridge at the end
+                        if total_length > bridge_length:
+                            # Shorten the cut to leave space for a bridge
+                            cut_end = total_length - bridge_length
+                            if cut_end > 0:
+                                shortened_poly = self.extract_path_segment(path, 0, cut_end)
+                                return [shortened_poly] if shortened_poly else []
+                        # Path too short to safely perforate, skip it
+                        return []
+                    else:
+                        # Start with bridge, so skip this entire short path
+                        return []
+                else:
+                    # Path is longer than cut length but shorter than full segment
+                    # Apply one cut and leave the rest as bridge
+                    cut_segment = self.extract_path_segment(path, 0, cut_length)
+                    return [cut_segment] if cut_segment else []
                 
             segments = []
             current_distance = 0.0
             is_cutting = self.config.start_with_cut
-            
-            while current_distance < total_length:
+
+            # BUGFIX: Pre-calculate pattern to ensure it always ends with a bridge (pen up)
+            # This prevents the pen from staying down after the last cut segment
+            effective_length = total_length
+
+            # Calculate how much space we need to reserve for a final bridge
+            # to ensure the pattern always ends with pen up
+            if total_length > segment_length:
+                # Calculate what the final state would be with the normal pattern
+                remaining_length = total_length
+                final_is_cutting = self.config.start_with_cut
+
+                while remaining_length > 0:
+                    if final_is_cutting:
+                        remaining_length -= min(cut_length, remaining_length)
+                    else:
+                        remaining_length -= min(bridge_length, remaining_length)
+
+                    if remaining_length <= 0:
+                        break
+
+                    final_is_cutting = not final_is_cutting
+
+                # If the pattern would end with cutting, reserve space for a final bridge
+                if final_is_cutting and total_length > bridge_length:
+                    effective_length = total_length - bridge_length
+
+            while current_distance < effective_length:
                 if is_cutting:
                     # Create a cut segment
                     segment_start = current_distance
-                    segment_end = min(current_distance + cut_length, total_length)
-                    
+                    segment_end = min(current_distance + cut_length, effective_length)
+
                     if segment_end > segment_start:
                         cut_segment = self.extract_path_segment(path, segment_start, segment_end)
                         if cut_segment and len(cut_segment) >= 2:
                             segments.append(cut_segment)
-                            
+
                     current_distance = segment_end
                 else:
                     # Skip bridge segment (pen up)
-                    current_distance = min(current_distance + bridge_length, total_length)
-                    
+                    current_distance = min(current_distance + bridge_length, effective_length)
+
                 # Toggle between cutting and bridging
                 is_cutting = not is_cutting
-                
+
             return segments if segments else [poly]
         except Exception:
             # If anything goes wrong, return original polygon
